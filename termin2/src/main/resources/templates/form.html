@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+<!-- The form should submit to DiscussionController.create or DiscussionController.update,
+     depending on whether we are creating or editing an entity -->
+<form th:method="post" th:action="@{'/discussions/{id}' (id=${discussion?.getId()})}">
+    <div>
+        <label for="f1">Title</label>
+        <input type="text"
+               id="f1"
+               required th:value="${discussion?.getTitle()}" name="title">
+    </div>
+    <div>
+        <label for="f2">Description</label>
+        <input type="text"
+               id="f2"
+               required th:value="${discussion?.getDescription()}" name="description">
+    </div>
+    <div>
+        <label for="f6">Due Date</label>
+        <input type="date"
+               id="f6"
+               required th:value="${discussion?.getDueDate()}" name="dueDate">
+    </div>
+    <div>
+        <label>Tag</label><br/>
+        <select id="f4" name="discussionTag">
+            <!-- For each tag you should have one <option> like below  -->
+            <option th:each="tag:${tags}" th:value="${tag.name()}" th:text="${tag.name()}"
+                    th:selected="${discussion!=null ? discussion.getTag().toString().equals(tag) : null}"> [tag_name]</option>
+        </select>
+    </div>
+    <div>
+        <label>Participants</label><br/>
+        <select id="f5" multiple name="participants">
+            <!-- For each participant you should have one <option> like below  -->
+            <option th:each="participant:${users}" th:value="${participant.getId()}" th:text="${participant.getUsername()}"
+                    th:selected="${discussion!=null ? discussion.getParticipants().contains(participant) : null}"> [participant.username]</option>
+        </select>
+    </div>
+
+    <button id="submit" type="submit">Submit</button>
+    <a id="back" href="/discussions" type="button" class="btn btn-primary">Back to discussions</a>
+</form>
+
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+        <input type="hidden" id="f3" value="f3" required>
+    </ul>
+</div>
+
+</body>
+</html>
+

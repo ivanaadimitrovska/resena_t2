@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method DiscussionController.showList -->
+    <form id="filter-form">
+        <label for="f1">Due in days</label>
+        <input id="f1" type="number" name="daysUntilClosing"/>
+        <label for="f2">Participant</label>
+        <select id="f2" name="participantId">
+            <option value="">All</option>
+            <!-- For each user you should have one <option> like below  -->
+            <option th:each="user:${users}" th:text="${user.getUsername()}" th:value="${user.getId()}"> [user] </option>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+
+            <!-- DiscussionController.showAdd (Only MASTER can see this element)-->
+            <a class="add-item" href="/discussions/add" sec:authorize="hasRole('ROLE_MASTER')">
+                Add
+            </a>
+    </div>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Tag</th>
+            <th>Participants</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each discussion you should have one <tr> like below -->
+        <tr class="item" th:each="discussion :${discussions}">
+            <td th:text="${discussion.getTitle()}">[discussion.title]</td>
+            <td th:text="${discussion.getDescription()}">[discussion.description]</td>
+            <td th:text="${discussion.getTag()}">[discussion.tag]</td>
+            <td>
+                <!-- For each of the discussion.participants show the following element-->
+                <span class="item-rel" th:each="user:${discussion.getParticipants()}" th:text="${user.getUsername()}" th:value="${user.getId()}"> [participant.username]</span>
+            </td>
+            <td>
+                    <!-- DiscussionController.delete (Only MASTER can see this element)-->
+                    <form th:method="post" th:action="@{'/discussions/{id}/delete' (id=${discussion.getId()})}" sec:authorize="hasRole('ROLE_MASTER')">
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                    <!-- DiscussionController.showEdit (Only MASTER can see this element)-->
+                    <a class="edit-item" th:href="@{'/discussions/{id}/edit' (id=${discussion.getId()})}" sec:authorize="hasRole('ROLE_MASTER')">Edit</a>
+
+                <!-- DiscussionController.markPopular (Visible only when the discussion is not already popular)-->
+                <th:block th:if="${discussion.getPopular() == false}">
+                <form th:method="post" th:action="@{'/discussions/{id}/mark_popular' (id=${discussion.getId()})}">
+                    <button class="change-item">Mark as popular</button>
+                </form>
+                </th:block>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
+
+
+
